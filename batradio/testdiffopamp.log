@@ -1,0 +1,57 @@
+Circuit: * Z:\home\sietse\Radio\batradio\testdiffopamp.asc
+
+ERROR: Node U1:I0:I21:1:102 is floating and connected to current source G:U1:I0:I21:1:RA
+ERROR: Node U1:I0:I19:1:102 is floating and connected to current source G:U1:I0:I19:1:RA
+ERROR: Node U1:I0:I19:1:302 is floating and connected to current source G:U1:I0:I19:1:RC
+
+u1:i0:vprobe1b: Missing value, assumed 0V @ DC
+u1:i0:vprobe2b: Missing value, assumed 0V @ DC
+u1:i0:vprobe2a: Missing value, assumed 0V @ DC
+u1:i0:vprobe1a: Missing value, assumed 0V @ DC
+u1:i0:vprobe4: Missing value, assumed 0V @ DC
+u1:i0:i32:vprobe: Missing value, assumed 0V @ DC
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+vernier = 0.5
+vernier = 0.25
+vernier = 0.125
+Gmin = 6.018
+vernier = 0.0625
+vernier = 0.03125
+vernier = 0.015625
+vernier = 0.0078125
+vernier = 0.00390625
+Gmin = 5.6588
+vernier = 0.00195313
+vernier = 0.000976563
+vernier = 0.000488281
+Gmin = 0
+Gmin stepping failed
+
+Starting source stepping with srcstepmethod=0
+Source Step = 3.0303%
+Source Step = 33.3333%
+Source Step = 63.6364%
+Source Step = 93.9394%
+Source stepping succeeded in finding the operating point.
+
+
+Date: Fri Feb 01 11:44:39 2019
+Total elapsed time: 1.803 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 9993
+traniter = 8018
+tranpoints = 4010
+accept = 2414
+rejected = 1596
+matrix size = 351
+fillins = 759
+solver = Normal
+Thread vector: 16.3/7.3[8] 2.9/2.0[7] 10.7/3.3[8] 1.1/2.6[1]  2592/500
+Matrix Compiler1: 45.84 KB object code size  8.6/3.9/[2.0]
+Matrix Compiler2: 36.57 KB object code size  5.4/6.2/[1.9]
+

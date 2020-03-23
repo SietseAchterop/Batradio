@@ -1,0 +1,116 @@
+
+Wat heb ik aan dts nodig?
+  uberhaupt nodig? waarom?
+  ik gebruik gpio en spi direct, dus niet via dts gebruiken?
+
+
+
+
+# op rpi zero met standaard kernel
+  Linux raspberrypi 4.19.108+ #1 Tue Mar 10 15:20:30 CET 2020 armv6l GNU/Linux
+
+cyclictest -i 5000 -n --spike=1000
+na 1 minuut:
+
+# /dev/cpu_dma_latency set to 0us
+policy: other/other: loadavg: 0.83 0.56 0.67 1/172 2292          
+
+T: 0 ( 2260) P: 0 I:5000 C:  12306 Min:     37 Act:   96 Avg:  179 Max:   11506
+^C
+T: 0 Spike:    2203: TS:  -1096010588
+T: 0 Spike:    2571: TS:  -1096010588
+T: 0 Spike:    1412: TS:  -1096010588
+T: 0 Spike:    6936: TS:  -1096010588
+T: 0 Spike:    1045: TS:  -1096010588
+T: 0 Spike:    1054: TS:  -1096010588
+T: 0 Spike:    2135: TS:  -1096010588
+T: 0 Spike:    2439: TS:  -1096010588
+T: 0 Spike:    1499: TS:  -1096010588
+T: 0 Spike:   10620: TS:  -1096010588
+T: 0 Spike:    1064: TS:  -1096010588
+T: 0 Spike:    1093: TS:  -1096010588
+T: 0 Spike:    1450: TS:  -1096010588
+T: 0 Spike:    1090: TS:  -1096010588
+T: 0 Spike:    1107: TS:  -1096010588
+T: 0 Spike:    2527: TS:  -1096010588
+T: 0 Spike:   11506: TS:  -1096010588
+T: 0 Spike:    2231: TS:  -1096010588
+T: 0 Spike:    1853: TS:  -1096010588
+T: 0 Spike:    5667: TS:  -1096010588
+T: 0 Spike:    5078: TS:  -1096010588
+T: 0 Spike:    1020: TS:  -1096010588
+T: 0 Spike:    1267: TS:  -1096010588
+T: 0 Spike:    1047: TS:  -1096010588
+T: 0 Spike:    1282: TS:  -1096010588
+T: 0 Spike:    1023: TS:  -1096010588
+T: 0 Spike:    1380: TS:  -1096010588
+T: 0 Spike:    1040: TS:  -1096010588
+T: 0 Spike:    1505: TS:  -1096010588
+T: 0 Spike:    2464: TS:  -1096010588
+T: 0 Spike:    1217: TS:  -1096010588
+T: 0 Spike:    1089: TS:  -1096010588
+T: 0 Spike:    1254: TS:  -1096010588
+T: 0 Spike:    2375: TS:  -1096010588
+T: 0 Spike:    1757: TS:  -1096010588
+spikes = 35
+
+
+# op rpi zero met kernel met low latency optie aangezet
+  Linux raspberrypi 4.19.108+ #1 PREEMPT Thu Mar 19 16:43:29 CET 2020 armv6l GNU/Linux
+    (het helpt wel wat)
+    
+  opvallend verschil met rpi3+: Max value is daar niet extreem veel groter dan Avg.
+
+# /dev/cpu_dma_latency set to 0us
+policy: other/other: loadavg: 0.90 0.95 0.46 1/182 1253           
+
+T: 0 ( 1188) P: 0 I:5000 C:  12142 Min:     44 Act:  129 Avg:  153 Max:    8816
+^C
+T: 0 Spike:    1207: TS:  -1093741404
+T: 0 Spike:    1033: TS:  -1093741404
+T: 0 Spike:    1619: TS:  -1093741404
+T: 0 Spike:    1023: TS:  -1093741404
+T: 0 Spike:    1128: TS:  -1093741404
+T: 0 Spike:    1062: TS:  -1093741404
+T: 0 Spike:    4581: TS:  -1093741404
+T: 0 Spike:    1023: TS:  -1093741404
+T: 0 Spike:    1286: TS:  -1093741404
+T: 0 Spike:    1325: TS:  -1093741404
+T: 0 Spike:    4967: TS:  -1093741404
+T: 0 Spike:    1721: TS:  -1093741404
+T: 0 Spike:    3108: TS:  -1093741404
+T: 0 Spike:    1022: TS:  -1093741404
+T: 0 Spike:    1241: TS:  -1093741404
+T: 0 Spike:    2816: TS:  -1093741404
+T: 0 Spike:    8816: TS:  -1093741404
+T: 0 Spike:    1464: TS:  -1093741404
+T: 0 Spike:    1064: TS:  -1093741404
+T: 0 Spike:    5001: TS:  -1093741404
+T: 0 Spike:    1230: TS:  -1093741404
+T: 0 Spike:    1149: TS:  -1093741404
+T: 0 Spike:    1077: TS:  -1093741404
+T: 0 Spike:    1027: TS:  -1093741404
+T: 0 Spike:    2067: TS:  -1093741404
+T: 0 Spike:    1272: TS:  -1093741404
+T: 0 Spike:    1426: TS:  -1093741404
+T: 0 Spike:    1098: TS:  -1093741404
+T: 0 Spike:    1461: TS:  -1093741404
+T: 0 Spike:    1506: TS:  -1093741404
+T: 0 Spike:    1445: TS:  -1093741404
+T: 0 Spike:    1072: TS:  -1093741404
+T: 0 Spike:    1070: TS:  -1093741404
+T: 0 Spike:    1036: TS:  -1093741404
+T: 0 Spike:    1417: TS:  -1093741404
+T: 0 Spike:    1168: TS:  -1093741404
+T: 0 Spike:    1213: TS:  -1093741404
+T: 0 Spike:    1280: TS:  -1093741404
+T: 0 Spike:    1588: TS:  -1093741404
+T: 0 Spike:    1330: TS:  -1093741404
+T: 0 Spike:    1866: TS:  -1093741404
+T: 0 Spike:    1665: TS:  -1093741404
+T: 0 Spike:    1819: TS:  -1093741404
+T: 0 Spike:    1644: TS:  -1093741404
+T: 0 Spike:    2373: TS:  -1093741404
+T: 0 Spike:    1001: TS:  -1093741404
+spikes = 46
+
