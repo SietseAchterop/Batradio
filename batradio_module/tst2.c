@@ -5,9 +5,13 @@
 #include <linux/miscdevice.h>
 
 static int batradio_mmap(struct file *file, struct vm_area_struct *vma)
-{  return 0; }
+{ printk(KERN_INFO "batradio_mmap\n");
+  return 0;
+}
 static long batradio_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-{ return 0; }
+{ printk(KERN_INFO "batradio_ioctl\n");
+  return 0;
+}
 
 static const struct file_operations batradio_fops = {
 	.mmap		= &batradio_mmap,
@@ -21,35 +25,43 @@ static struct miscdevice batradio_dev = {
 };
 static int bat_probe(struct platform_device *pdev)
 {
-  int ret;
   printk(KERN_INFO "Probe with bat_probe\n");
   //   .....
-  ret = misc_register(&batradio_dev);
   return 0;
 }
 
 static int bat_remove(struct platform_device *pdev)
-{ return 0; }
+ { printk(KERN_INFO "bat_remove\n");
+   return 0;
+ }
 
 static struct platform_driver bat_driver = {
 	.probe	= bat_probe,
 	.remove	= bat_remove,
 	.driver = {
-		.name = "batfiq",
-		.owner = THIS_MODULE,
+		   .name = "batradio",    // verband met miscdevice?
+		   .owner = THIS_MODULE,
 	},
 };
 
 int myinit(void)
-{   printk(KERN_INFO "  Start my driver.... \n");
-    platform_driver_register(&bat_driver);
-    return 0;
+{ int ret;
+  platform_driver_register(&bat_driver);
+  ret = misc_register(&batradio_dev);
+  if (ret) {
+    printk(KERN_INFO "  Failed to register misc device\n");
+    return ret;
+  }
+  printk(KERN_INFO "  Started my driver.... \n");
+  return 0;
 }
 
 void myexit(void)
-{   printk(KERN_INFO "  Stopped my driver... \n");
-    platform_driver_unregister(&bat_driver);
-    return;
+{
+  misc_register(&batradio_dev);
+  platform_driver_unregister(&bat_driver);
+  printk(KERN_INFO "  Stopped my driver... \n");
+  return;
 }
 
 module_init(myinit);
