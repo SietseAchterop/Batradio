@@ -97,27 +97,9 @@ static struct miscdevice batradio_dev = {
 	.minor	= MISC_DYNAMIC_MINOR,
 };
 
-extern unsigned char batradio_handler, batradio_handler_end;
-
-void c_fiq_handler ( void )
-{
-  struct fiq_buffer *fiq_buf = (struct fiq_buffer *)batradio_data->fiq_base;
-  // clear interrupt
-  *((uint32_t *)ARMTIMER+0x0C) = 0;
-
-  // do our stuff
-
-  fiq_buf->status += 1;
-}
-
-static struct fiq_handler bat_fh = {
-	.name	= "batradio_handler"
-};
-
 int init_bat(void)
 {
   int ret;
-  struct pt_regs regs;
   struct fiq_buffer *fiq_buf;
   
   pdev = platform_device_register_simple("batradio__", 0, NULL, 0);
@@ -146,39 +128,6 @@ int init_bat(void)
 	   "Allocated pages at address 0x%p, with size %x bytes\n",
 	   batradio_data->fiq_base, FIQ_BUFFER_SIZE);
   
-if (0) {
-  // setup fiq, zijn deze routines te gebruiken?
-  ret = claim_fiq(&bat_fh);
-  if (ret) {
-    printk("Claim_fiq not succeeded!\n");
-    return ret;
-  }
-
-  // gaat dat goed samen met c_fiq_handler?
-  set_fiq_handler(&batradio_handler,
-		  &batradio_handler_end - &batradio_handler);
-
-  regs.ARM_r8 = (long)0;
-  regs.ARM_r9 = (long)0;
-  regs.ARM_r10 = (long)batradio_data->fiq_base;
-  set_fiq_regs(&regs);
-
-  /* Enable the FIQ (0x80) for arm timer (0x40) */
-  *((uint32_t *)IRQREGS+0x0c) =  0xc0;
-
-  // prepare ARM timer
-  // stop timer
-  *((uint32_t *)ARMTIMER+0x08) = 0;
-  // load value
-  *((uint32_t *)ARMTIMER+0x00) = 100000-1;
-  // set pre-divider
-  *((uint32_t *)ARMTIMER+0x1c) = 100;
-  // clear interrupt
-  *((uint32_t *)ARMTIMER+0x0c) = 0;
-  // start timer
-  *((uint32_t *)ARMTIMER+0x08) = 0x00000282;
-
-  }
   // create device
   ret = misc_register(&batradio_dev);
   if (ret)
