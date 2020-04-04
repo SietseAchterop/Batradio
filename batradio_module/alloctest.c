@@ -29,77 +29,8 @@ struct bat_data {
 
 static struct bat_data *batradio_data;
 
-static int batradio_mmap(struct file *file, struct vm_area_struct *vma)
-{
-  struct fiq_buffer *fiq_buf = (struct fiq_buffer *)batradio_data->fiq_base;
-  size_t size = vma->vm_end - vma->vm_start;
-  unsigned long offset = vma->vm_pgoff << PAGE_SHIFT;
-
-  printk("batradio mmap: 0x%p\n",fiq_buf);
-
-  if (offset + size > FIQ_BUFFER_SIZE)
-    return -EINVAL;
-
-  // __pa zou niet gebruikt mogen worden volgens memory.h
-  offset += __pa(batradio_data->fiq_base);
-
-  vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-
-  if (remap_pfn_range(vma,
-		      vma->vm_start,
-		      offset >> PAGE_SHIFT,
-		      size,
-		      vma->vm_page_prot)) {
-    return -EAGAIN;
-  }
-
-  fiq_buf->status += 100;
-
-  return 0;
-}
-
-static long batradio_ioctl(struct file *file,
-			       unsigned int cmd, unsigned long arg)
-{
-	struct fiq_buffer *fiq_buf = (struct fiq_buffer *)batradio_data->fiq_base;
-
-	switch (cmd) {
-	case FIQ_START:
-		fiq_buf->status = FIQ_STATUS_RUNNING;
-		//  ...
-		printk("FIO_START %d\n", fiq_buf->status);
-		break;
-	case FIQ_STOP:
-		fiq_buf->status = FIQ_STATUS_STOPPED;
-		//  ...
-		printk("FIO_STOP %d\n", fiq_buf->status);
-		break;
-	case FIQ_RESET:
-		fiq_buf->status = FIQ_STATUS_STOPPED;
-		//  ...
-		printk("FIO_RESET %d\n", fiq_buf->status);
-		break;
-	default:
-		return -ENOTTY;
-	};
-
-	return 0;
-}
-
-static const struct file_operations batradio_fops = {
-	.mmap		= &batradio_mmap,
-	.unlocked_ioctl	= &batradio_ioctl,
-};
-
-static struct miscdevice batradio_dev = {
-	.name	= "batradio",
-	.fops	= &batradio_fops,
-	.minor	= MISC_DYNAMIC_MINOR,
-};
-
 int init_bat(void)
 {
-  int ret;
   struct fiq_buffer *fiq_buf;
   
   pdev = platform_device_register_simple("batradio__", 0, NULL, 0);
@@ -128,11 +59,6 @@ int init_bat(void)
 	   "Allocated pages at address 0x%p, with size %x bytes\n",
 	   batradio_data->fiq_base, FIQ_BUFFER_SIZE);
   
-  // create device
-  ret = misc_register(&batradio_dev);
-  if (ret)
-    return ret;
-
   printk(KERN_INFO "  Installed batradio module... \n");
 
   return 0;

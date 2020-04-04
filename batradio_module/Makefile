@@ -9,7 +9,7 @@ sysr   = "/tmp/sysroot"
 mdir   = "batsdr"
 
 obj-m 	      += batradio.o 
-batradio-objs := bradio.o bradio_handler.o
+batradio-objs := bradio.o  # bradio_handler.o
 
 all:
 	make  -C $(ksrc) M=$(PWD) modules
