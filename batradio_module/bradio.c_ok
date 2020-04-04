@@ -188,6 +188,16 @@ static int bat_probe(struct platform_device *pdev)
   regs.ARM_r10 = (long)batradio_data->fiq_base;
   set_fiq_regs(&regs);
 
+  /*  ergens opgepikt
+    dout0 = ioremap(HW_PINCTRL_DOUT0, 0xffff);
+    din0  = ioremap(HW_PINCTRL_DIN0, 0xffff);
+    ...
+    regs.ARM_r8 = (long) dout0;
+    regs.ARM_r9 = (long) din0;
+  */
+
+
+
   /* Enable the FIQ */
   // mxs_icoll_set_irq_fiq(batradio_data->irq);
   enable_fiq(batradio_data->irq);

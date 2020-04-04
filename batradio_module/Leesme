@@ -1,8 +1,66 @@
+Poging arm timer gebruiken via fiq
+==================================
+ - registers arm timer goed zetten
+ - zet fiq handler
+ - start timer
 
-Wat heb ik aan dts nodig?
-  uberhaupt nodig? waarom?
-  ik gebruik gpio en spi direct, dus niet via dts gebruiken?
 
+# direct gebruik system timer #1
+================================
+ - maak handler
+ - zet adres in vector goed.  Waar?
+ - clear system match in CS
+ - nu zou het moeten werken
+ - uitzetten door clearen in handler niet meer te doen.
+      kan na x keer in de handler
+
+ - system timer staat niet in de tabel, kan daarom nooit een fiq gemaakt worden?!
+     zou dit wel te maken zijn via andere gpu firmware
+        - via aanpassing via mailbox
+	- via open source versie (maar dan geen wifi/bt, dus zinloos)
+
+INTERRUPS
+=========
+  basic pending heeft pending bits voor system timers?
+     system timer staat niet in tabel blz 114!
+     hoe doet linux dat dan?
+
+  verband tussen
+     tabel in blink07/vectors.s
+        en
+     blink07/vectors.s
+        vanaf adres 0
+	   reset
+	   udefined
+	   swi
+	   prefetch
+	   data
+	   unused
+	   irq
+	   fiq
+
+  what about bank 0,1,2 waar fiq wel instaat
+
+Of toch de ARM timer interrupt gebruiken?
+  die kan een fiq gemaakt worden
+    en fiq blijkt linux vrijwel vanaf!
+
+  address 7E00B200
+               20C   FIQ control
+               218   enable basic IRQ's
+	       224   disable basic IRQ's
+
+Wat leer ik van blink07
+=======================
+
+
+# timer naar fiq
+================
+ uitzoeken hoe dit in de registers moet.
+ zie onderstaande functies
+ - claim fiq
+ - set_fiq_handler
+ -    ..
 
 
 

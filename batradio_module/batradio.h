@@ -26,3 +26,4 @@ struct fiq_buffer {
 
   //  ...
 };
+
