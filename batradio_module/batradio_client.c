@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   fiq_fd = open(FIQ_PATH, O_RDWR);
   if (!fiq_fd) {
     ret = errno;
-    perror("Couldn't open fiq file");
+    perror("Couldn't open batradio device, error %d", errno);
     exit(-1);
   }
 
