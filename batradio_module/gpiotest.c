@@ -12,6 +12,9 @@
 
 static struct platform_device *pdev;
 
+volatile uint32_t  *gpio;
+
+
 struct bat_data {
   void __iomem	*fiq_base;
   uint32_t dma_handle;
@@ -60,12 +63,14 @@ static long batradio_ioctl(struct file *file,
 	case FIQ_START:
 		fiq_buf->status = FIQ_STATUS_RUNNING;
 		printk("FIO_START %d\n", fiq_buf->status);
-		//  ...
+		//  led on
+		GPIO_CLR = 1<<LED;  // led aan
 		break;
 	case FIQ_STOP:
 		fiq_buf->status = FIQ_STATUS_STOPPED;
-		//  ...
 		printk("FIO_STOP %d\n", fiq_buf->status);
+		//  led off
+		GPIO_SET = 1<<LED;  // led uit
 		break;
 	case FIQ_RESET:
 		fiq_buf->status = FIQ_STATUS_STOPPED;
@@ -94,6 +99,8 @@ int init_bat(void)
 {
   int ret;
   
+  // fail if not on a BCM2835?
+
   pdev = platform_device_register_simple("batradio__", 0, NULL, 0);
   if (IS_ERR(pdev))
     return PTR_ERR(pdev);
@@ -125,6 +132,17 @@ int init_bat(void)
 	   "Allocated pages at address 0x%p, with size %x bytes\n",
 	   batradio_data->fiq_base, FIQ_BUFFER_SIZE);
   
+   /* mmap GPIO */
+  gpio = (uint32_t *) ioremap(GPIO_BASE, GPIO_SIZE);
+  if (gpio == NULL) {
+    printk("ioremap error!\n");
+    return -ENOMEM;
+  }
+
+ // configure status led
+  INP_GPIO(LED); // must use INP_GPIO before we can use OUT_GPIO
+  OUT_GPIO(LED);
+
   // create device
   ret = misc_register(&batradio_dev);
   if (ret)

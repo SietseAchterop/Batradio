@@ -139,12 +139,10 @@ int main(int argc, char **argv)
     // gokje, controleren dat r3 de waarde in gpio_map bevat!
     asm volatile (
 		  "mov  r5, #0x2000 \n"
-		  :: [gpiobase] "r" (gpio_map)
-		  : "memory", "cc", "r5");
-    asm volatile (
 		  "str  r5, [r3, #28] \n"
 		  "push {r3} \n"
-		      );
+		  :: [gpiobase] "r" (gpio_map)
+		  : "memory", "cc", "r5");
     mysleep(10000);
     asm volatile (
 		  "pop {r3} \n"

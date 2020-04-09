@@ -14,10 +14,12 @@
 	.global batradio_handler_end
 
 batradio_handler:
-	push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+	/* Save no banked registers */
+	stmdb sp!, {r0-r7}
+	
 	bl c_fiq_handler
-	pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 
 	/* return from FIQ */
+	ldmia sp!, {r0-r7}	
 	subs	pc, lr, #4
 batradio_handler_end:

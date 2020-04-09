@@ -1,12 +1,16 @@
 /*   SPDX-License-Identifier: GPL-2.0
  *
  *   Client program for the batradio device
+ *     compile with
+ *          . setenvzero.sh
+ *          arm-linux-gnueabihf-gcc batradio_client.c -o batradio_client
  */
 
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/ioctl.h>
@@ -15,6 +19,16 @@
 #include "batradio.h"
 
 #define FIQ_PATH	"/dev/batradio"
+
+int       mem_fd;
+volatile uint32_t *irqtimer;
+
+static inline unsigned asm_get_cpsr(void)
+{
+  unsigned long retval;
+  asm volatile (" mrs  %0, cpsr" : "=r" (retval) : /* no inputs */  );
+  return retval;
+}
 
 void intHandler(int dummy) {
 
@@ -35,11 +49,35 @@ int main(int argc, char *argv[])
 
   signal(SIGINT, intHandler);
 
+   /* open /dev/mem */
+   if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
+      printf("can't open /dev/mem \n");
+      exit(-1);
+   }
+
+  /* mmap irqtimer */
+   irqtimer = (uint32_t *)mmap(
+      NULL,             //Any adddress in our space will do
+      1024,             //Map length
+      PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
+      MAP_SHARED,       //Shared with other processes
+      mem_fd,           //File to map
+      IRQTIMER_BASE         //Offset to GPIO peripheral
+   );
+
+   if (irqtimer == MAP_FAILED) {
+      printf("mmap error %d\n", (int)irqtimer);//errno also set!
+      exit(-1);
+   }
+
+   printf("load, val, raw irq %d  %d  0x%x\n", TIMLOAD, TIMVAL, RAWINT);
+
+
   // open the batradio device
   fiq_fd = open(FIQ_PATH, O_RDWR);
   if (!fiq_fd) {
     ret = errno;
-    perror("Couldn't open batradio device, error %d", errno);
+    perror("Couldn't open batradio device");
     exit(-1);
   }
 
@@ -61,7 +99,8 @@ int main(int argc, char *argv[])
     exit(-3);
   }
 
-  printf("status %d\n", fiq_buf->status);
+  printf("led on, status %d\n", fiq_buf->status);
+  usleep(1000000);
 
   // start collecting data
   ret = ioctl(fiq_fd, FIQ_STOP);
@@ -70,7 +109,7 @@ int main(int argc, char *argv[])
     exit(-3);
   }
 
-  printf("status %d\n", fiq_buf->status);
+  printf("led off, status %d\n", fiq_buf->status);
 
   // start collecting data
   ret = ioctl(fiq_fd, FIQ_RESET);
@@ -79,13 +118,32 @@ int main(int argc, char *argv[])
     exit(-3);
   }
 
-  printf("status %d\n", fiq_buf->status);
+  printf("status %d, cpsr  0x%x\n", fiq_buf->status,   asm_get_cpsr());
 
-  printf("NU de LOOP\n");
-  while (1)
+
+  TIMCINT = 0;
+  
+  printf("Now in the LOOP\n");
+  i = 10;
+  while (i)
     {
-      usleep(100000);
+      printf("val, raw irq %d  0x%x\n", (uint32_t)TIMVAL, RAWINT);
+
+      ret = ioctl(fiq_fd, FIQ_START);
+      if (ret) {
+	printf("Couldn't start the FIQ\n");
+	exit(-3);
+      }
+      usleep(1000);
+      ret = ioctl(fiq_fd, FIQ_STOP);
+      if (ret) {
+	printf("Couldn't stop the FIQ\n");
+	exit(-3);
+      }
+  
+      usleep(1000);
       printf("status %d\n", fiq_buf->status);
+      i--;
     }
   
   return 0;
