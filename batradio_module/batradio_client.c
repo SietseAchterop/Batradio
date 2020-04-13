@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
   }
 
   printf("led on, status %d\n", fiq_buf->status);
-  usleep(1000000);
+  usleep(10000);
 
   // start collecting data
   ret = ioctl(fiq_fd, FIQ_STOP);
@@ -121,27 +121,31 @@ int main(int argc, char *argv[])
   printf("status %d, cpsr  0x%x\n", fiq_buf->status,   asm_get_cpsr());
 
 
-  TIMCINT = 0;
-  
   printf("Now in the LOOP\n");
-  i = 10;
+
+  //  TIMCINT = 0;
+  //  TIMLOAD = 10000-1;
+  
+  i = 20;
   while (i)
     {
-      printf("val, raw irq %d  0x%x\n", (uint32_t)TIMVAL, RAWINT);
-
+      printf("val, raw irq, cpsr: %d  0x%x  0x%x\n", (uint32_t)TIMVAL, RAWINT, asm_get_cpsr());
+      printf("basic pending irq: 0x%x\n", BASIRQ);
+      printf("bradio: enable basic  irq: 0x%x\n", BASENA);
+      printf("bradio: disable basic irq: 0x%x\n", BASDIS);
       ret = ioctl(fiq_fd, FIQ_START);
       if (ret) {
 	printf("Couldn't start the FIQ\n");
 	exit(-3);
       }
-      usleep(1000);
+      usleep(10000);
       ret = ioctl(fiq_fd, FIQ_STOP);
       if (ret) {
 	printf("Couldn't stop the FIQ\n");
 	exit(-3);
       }
   
-      usleep(1000);
+      usleep(10000);
       printf("status %d\n", fiq_buf->status);
       i--;
     }

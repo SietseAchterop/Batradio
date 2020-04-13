@@ -222,10 +222,11 @@ forces fiq_enable true.n short - need to modify the boot options to remove
   set_fiq_regs(&regs);
 
   // timer interrupt to fiq
-  IRQFIQ = 0xA0;
+  IRQFIQ = 0xC0;
   // start timer with interrupt
   TIMCNTR = 0x003E00A2;
   TIMCINT = 0;
+  // enable_fiq(0);
 
   // create device
   ret = misc_register(&batradio_dev);

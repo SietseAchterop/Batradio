@@ -57,6 +57,8 @@
 // ****  IRQ  ****
 #define BASIRQ  *(irqtimer+ 0x200/4)
 #define IRQFIQ  *(irqtimer+ 0x200/4 + 3)
+#define BASENA  *(irqtimer+ 0x200/4 + 6)
+#define BASDIS  *(irqtimer+ 0x200/4 + 9)
 
 
 // ****  ARM timer  ****

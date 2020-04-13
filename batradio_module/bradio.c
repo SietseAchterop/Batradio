@@ -70,25 +70,21 @@ static int batradio_mmap(struct file *file, struct vm_area_struct *vma)
 static long batradio_ioctl(struct file *file,
 			       unsigned int cmd, unsigned long arg)
 {
-	printk("before FIO ioctl %d\n", fiq_buf->status);
 
 	switch (cmd) {
 	case FIQ_START:
 		fiq_buf->status = FIQ_STATUS_RUNNING;
-		printk("FIO_START %d\n", fiq_buf->status);
 		//  led on
-		GPIO_CLR = 1<<CNVST;  // led aan
+		//GPIO_CLR = 1<<CNVST;  // led aan
 		break;
 	case FIQ_STOP:
 		fiq_buf->status = FIQ_STATUS_STOPPED;
-		printk("FIO_STOP %d\n", fiq_buf->status);
 		//  led off
-		GPIO_SET = 1<<CNVST;  // led uit
+		//GPIO_SET = 1<<CNVST;  // led uit
 		break;
 	case FIQ_RESET:
 		fiq_buf->status = FIQ_STATUS_STOPPED;
 		//  ...
-		printk("FIO_RESET %d\n", fiq_buf->status);
 		break;
 	default:
 		return -ENOTTY;
@@ -114,6 +110,19 @@ static struct fiq_handler bat_fh = {
 	.name	= "batradio_handler"
 };
 
+/*
+  voor fiq handler in C:
+
+    __attribute__ ((interrupt (“FIQ”)))
+
+u32 fiqhandler_asm[2];
+fiqhandler_asm[0] = 0xE51FF004;         /∗ ldr pc , [pc , #−4] ∗/
+fiqhandler_asm[1] = (u32)fiqhandler_c;
+set_fiq_handler ((void∗)fiqhandler_asm , 8);
+
+
+*/
+// currently not used
 static int toggle = 0;
 void c_fiq_handler(void) {
 
@@ -121,11 +130,11 @@ void c_fiq_handler(void) {
   TIMCINT = 0;
 
   if (toggle) {
-    GPIO_CLR = 1<<CNVST;  // led aan
+    GPIO_CLR = 1<<CNVST;  // led on
     toggle = 0;
   }
   else {
-    GPIO_SET = 1<<CNVST;  // led uit
+    GPIO_SET = 1<<CNVST;  // led off
     toggle = 1;
   }
 
@@ -133,6 +142,7 @@ void c_fiq_handler(void) {
 
 int init_bat(void)
 {
+  uint32_t x;
   int ret;
   struct pt_regs regs;
   
@@ -175,10 +185,14 @@ int init_bat(void)
     return -ENOMEM;
   }
 
+  printk("gpiospi 0x%p\n", gpiospi);
+  
   // configure CVVST as output
   INP_GPIO(CNVST); // must use INP_GPIO before we can use OUT_GPIO
   OUT_GPIO(CNVST);
 
+  GPIO_SET = 1<<CNVST;  // led off
+  
   //  adc
   //  setup_spi();
 
@@ -190,10 +204,8 @@ int init_bat(void)
 
   printk("init_bat: rar irq 0x%x\n", RAWINT);
 
-  // set ARM timer
-  TIMCNTR = 0x003E002;
-  TIMLOAD = 10000-1;
-  TIMPRED = 500-1;
+  // stop ARM timer
+  TIMCNTR = 0x0000000;
   TIMCINT = 0;
 
   /*
@@ -216,17 +228,29 @@ forces fiq_enable true.n short - need to modify the boot options to remove
   set_fiq_handler(&batradio_handler,
 		  &batradio_handler_end - &batradio_handler);
 
+  // static u8 fiqstack[4096];
+  // regs.ARM_sp = ( u32 )& f i qstack[sizeof(fiqstack)];
+  
   regs.ARM_r8 = (long)gpiospi;
   regs.ARM_r9 = (long)irqtimer;
   regs.ARM_r10 = (long)batradio_data->fiq_base;
   set_fiq_regs(&regs);
 
-  // timer interrupt to fiq
-  IRQFIQ = 0xA0;
+  // timer interrupt to fiq and enabled
+  IRQFIQ = 0xC0;
   // start timer with interrupt
-  TIMCNTR = 0x003E00A2;
-  TIMCINT = 0;
+  TIMLOAD = 10000-1;
+  TIMPRED = 0x7E;  // default
+  printk("bradio: basic pending irq: 0x%x\n", BASIRQ);
+  printk("bradio: enable basic  irq: 0x%x\n", BASENA);
+  x = BASDIS;
+  BASDIS = x | 0x0001;
+  printk("bradio: disable basic irq: 0x%x\n", BASDIS);
+  // crashes!
+  //TIMCNTR = 0x000000A2;
 
+  //enable_fiq(0);
+  
   // create device
   ret = misc_register(&batradio_dev);
   if (ret)
@@ -242,10 +266,18 @@ forces fiq_enable true.n short - need to modify the boot options to remove
 void exit_bat(void)
 {
   misc_deregister(&batradio_dev);
+
   IRQFIQ = 0x00;
   TIMCNTR = 0x003E0000;
+  // disable_fiq(0);
+
   // gpio
+
+  iounmap(irqtimer);
+  iounmap(gpiospi);
+
   release_fiq(&bat_fh);
+
   platform_device_unregister(pdev);
   printk(KERN_INFO "  Removed batradio module... \n");
   return;
