@@ -12,7 +12,7 @@ obj-m 	      += batradio.o
 batradio-objs := bradio.o  bradio_handler.o
 
 all:
-	make  -C $(ksrc) M=$(PWD) modules
+	make  -C $(ksrc) M=$(PWD) modules #EXTRA_CFLAGS='-O3 -v'
 
 # installeren op de pi zelf:
 #   copieer naar /lib/modules/kernel_version/kernel/drivers/misc

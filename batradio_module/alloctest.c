@@ -43,6 +43,9 @@ int init_bat(void)
   if (!batradio_data)
     return -ENOMEM;
   
+  // nodig? (naast cma=20 in /boot/cmdline.txt?)
+  pdev->dev.coherent_dma_mask = 0xffffffff;
+ 
   batradio_data->fiq_base = dma_zalloc_coherent(&pdev->dev,
 						FIQ_BUFFER_SIZE,
 						&batradio_data->dma_handle,
@@ -52,6 +55,8 @@ int init_bat(void)
     return -ENOMEM;
   }
 
+  printk("size %x\n", FIQ_BUFFER_SIZE);
+  
   fiq_buf = (struct fiq_buffer *)batradio_data->fiq_base;
   fiq_buf->status = 55;
 

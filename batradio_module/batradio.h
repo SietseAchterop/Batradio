@@ -5,7 +5,7 @@
 // #include <sys/types.h>
 #include <linux/ioctl.h>
 
-// also for BCM2835 on rpi_zero
+// for BCM2835 on rpi_zero
 #define BCM2708_PERI_BASE        0x20000000
 #define GPIOSPI_BASE            (BCM2708_PERI_BASE + 0x200000)  // gpio  0000,   spi  4000
 #define GPIOSPI_SIZE             0x5000
@@ -71,7 +71,8 @@
 #define TIMPRED *(irqtimer+0x400/4+7)
 
 
-#define FIQ_BUFFER_SIZE		(256 * 1024)
+#define FIQ_DATA_SIZE           (8 * 32 * 1024)
+#define FIQ_BUFFER_SIZE		(2 * FIQ_DATA_SIZE + 4096)
 
 #define FIQ_IOC_MAGIC            'p'
 #define FIQ_START		_IO(FIQ_IOC_MAGIC, 0xb0)
@@ -83,7 +84,7 @@
 #define FIQ_STATUS_ERR_URUN	(1 << 1)
 
 struct fiq_buffer {
-  u_int16_t data[8 * 32 * 1024];   // 8 buffers for 32 msec of samples
+  u_int16_t data[FIQ_DATA_SIZE];   // 8 buffers for 32 msec of samples
   // pointer to latest available full buffer
   // char of int?
   unsigned char bufp;

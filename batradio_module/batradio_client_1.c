@@ -131,6 +131,7 @@ int main(int argc, char *argv[])
     {
       printf("val, raw irq, cpsr: %u  0x%x  0x%x\n", (uint32_t)TIMVAL, RAWINT, asm_get_cpsr());
       printf("basic pending irq: 0x%x\n", BASIRQ);
+      printf("fiq register: 0x%x\n", IRQFIQ);
       printf("bradio: enable basic  irq: 0x%x\n", BASENA);
       printf("bradio: disable basic irq: 0x%x\n", BASDIS);
       ret = ioctl(fiq_fd, FIQ_START);
@@ -138,6 +139,9 @@ int main(int argc, char *argv[])
 	printf("Couldn't start the FIQ\n");
 	exit(-3);
       }
+      printf("status: %d\n", fiq_buf->status);
+      printf("nul: %d\n", fiq_buf->data[0]);
+      printf("drie: %d\n", fiq_buf->data[3]);
       usleep(10000);
       ret = ioctl(fiq_fd, FIQ_STOP);
       if (ret) {
@@ -145,14 +149,13 @@ int main(int argc, char *argv[])
 	exit(-3);
       }
   
+      printf("status: %d\n", fiq_buf->status);
+      printf("nul: %d\n", fiq_buf->data[0]);
+      printf("drie: %d\n", fiq_buf->data[3]);
       usleep(10000);
       printf("status %d\n", fiq_buf->status);
       i--;
     }
   
-  printf("status: %d\n", fiq_buf->status);
-  printf("nul: %d\n", fiq_buf->data[0]);
-  printf("drie: %d\n", fiq_buf->data[3]);
-
   return 0;
 }
