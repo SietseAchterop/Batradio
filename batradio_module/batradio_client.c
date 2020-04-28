@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
       PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
       MAP_SHARED,       //Shared with other processes
       mem_fd,           //File to map
-      IRQTIMER_BASE         //Offset to GPIO peripheral
+      IRQTIMER_BASE         //Offset to IRQ and Timer peripheral
    );
 
    if (irqtimer == MAP_FAILED) {
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
   //  TIMCINT = 0;
   //  TIMLOAD = 10000-1;
   
-  i = 20;
+  i = 5;
   while (i)
     {
       printf("val, raw irq, cpsr: %u  0x%x  0x%x\n", (uint32_t)TIMVAL, RAWINT, asm_get_cpsr());
@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
 	exit(-3);
       }
       usleep(10000);
+      printf("status na start%d\n", fiq_buf->status);      
       ret = ioctl(fiq_fd, FIQ_STOP);
       if (ret) {
 	printf("Couldn't stop the FIQ\n");
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
       }
   
       usleep(10000);
-      printf("status %d\n", fiq_buf->status);
+      printf("status na stop %d\n", fiq_buf->status);
       i--;
     }
   
