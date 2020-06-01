@@ -32,6 +32,7 @@ struct fiq_buffer *fiq_buf;
 struct fiq_buffer bufbuf;
 
 struct pt_regs regs;
+static char fiqstack[4096];
 
 static int batradio_mmap(struct file *file, struct vm_area_struct *vma)
 {
@@ -185,9 +186,10 @@ forces fiq_enable true.n short - need to modify the boot options to remove
   set_fiq_handler(&batradio_handler,
 		  &batradio_handler_end - &batradio_handler);
 
-  regs.ARM_r8 = (long)gpiospi;
-  regs.ARM_r9 = (long)irqtimer;
+  regs.ARM_r8  = (long)gpiospi;
+  regs.ARM_r9  = (long)irqtimer;
   regs.ARM_r10 = (long)0;        //batradio_data->fiq_base;
+  regs.ARM_sp  = (long)&fiqstack[sizeof(fiqstack)];
   set_fiq_regs(&regs);
 
   // start timer with interrupt
