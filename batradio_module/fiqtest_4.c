@@ -16,6 +16,9 @@
 #define INP_GPIO(g) *(gpiospi+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g) *(gpiospi+((g)/10)) |=  (1<<(((g)%10)*3))
 #define SET_GPIO_ALT(g,a) *(gpiospi+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
+#define GPIO_SET *(gpiospi+7)
+#define GPIO_CLR *(gpiospi+10)
+
 
 // ****  IRQ  ****
 #define BASIRQ  *(irqtimer+ 0x200/4)
@@ -32,13 +35,17 @@
 #define MSKINT  *(irqtimer+0x400/4+5)
 #define TIMPRED *(irqtimer+0x400/4+7)
 
-// gpio for cs pulse in batradio (of led in testing)
+// gpio for cs pulse in batradio (or led in testing)
 #define CNVST 13
 
 static uint32_t  *gpiospi;
 static uint32_t  *irqtimer;
 
 extern unsigned char batradio_handler, batradio_handler_end;
+
+static struct fiq_handler bat_fh = {
+	.name	= "batradio_handler"
+};
 
 int init_bat(void)
 {
@@ -54,7 +61,8 @@ int init_bat(void)
   // configure CNVST as output
   INP_GPIO(CNVST);
   OUT_GPIO(CNVST);
-
+  GPIO_SET = 1<<CNVST; // turn led off
+  
   irqtimer = (uint32_t *) ioremap(IRQTIMER_BASE, IRQTIMER_SIZE);
   if (irqtimer == NULL) {
     printk("ioremap: irqtimer error!\n");
@@ -69,14 +77,14 @@ int init_bat(void)
 
   /* Add to the cmdline.txt in /boot
         dwc_otg.fiq_fsm_enable=0 dwc_otg.fiq_enable=0 dwc_otg.nak_holdoff=0
-
+  */  
   ret = claim_fiq(&bat_fh);
   if (ret) {
     printk("batradio: claim_fiq failed.\n");
     iounmap(irqtimer); // needed?
     return ret;
   }
-  */  
+
   set_fiq_handler(&batradio_handler, &batradio_handler_end - &batradio_handler);
 
   // stack already set?
@@ -85,10 +93,13 @@ int init_bat(void)
   regs.ARM_r10 = (long)0;
   set_fiq_regs(&regs);
 
+  // cfa10049_fiq_data->irq = irq_of_parse_and_map(np, 0);
+
   TIMCNTR = 0x000000A2;   // start timer with interrupt, 23 bit counter
   IRQFIQ = 0xC0;         // timer interrupt to fiq directly via register
-  //enable_fiq(64);
+  //enable_fiq(0);
 
+  // for testing
   ret = 10;
   while (ret) {
     get_fiq_regs(&regs);
@@ -104,15 +115,11 @@ int init_bat(void)
 void exit_bat(void)
 {
 
-  printk("timer %d  %x\n", TIMVAL, RAWINT);
-  msleep(2);
-  printk("timer %d\n", TIMVAL);
-
   IRQFIQ = 0x00;
   TIMCNTR = 0x003E0000;
-  //disable_fiq(64);
+  //disable_fiq(0);
   
-  //release_fiq(&bat_fh);
+  release_fiq(&bat_fh);
   printk(KERN_INFO "  Removed batradio module... \n");
   return;
 }

@@ -35,7 +35,7 @@
 
 // gpio for cs pulse in batradio
 #define CNVST 13
-// idem for led
+// idem for standard led of rpi zero
 #define LED   26
 
 // ****  SPI  ****
