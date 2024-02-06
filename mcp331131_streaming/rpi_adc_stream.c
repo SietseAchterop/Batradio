@@ -519,8 +519,8 @@ void adc_dma_init(MEM_MAP *mp, int nsamp, int single)
             {SPI_RX_TI, REG(usec_regs, USEC_TIME), MEM(mp, &dp->usecs[1]),  4, 0, CBS(4), 0}, // 3
             {SPI_RX_TI, REG(spi_regs, SPI_FIFO),   MEM(mp, dp->rxd2), nsamp*4, 0, CBS(5), 0}, // 4
             {SPI_RX_TI, REG(spi_regs, SPI_CS),     MEM(mp, &dp->states[1]), 4, 0, CBS(0), 0}, // 5
-        // Tx output: 2 data writes to SPI for chan 0 & 1, or both chan 0
-            {SPI_TX_TI, MEM(mp, dp->txd),          REG(spi_regs, SPI_FIFO), 8, 0, CBS(6), 0}, // 6
+        // Tx output: dummy data to generate sclk
+            {SPI_TX_TI, MEM(mp, dp->txd),          REG(spi_regs, SPI_FIFO), 4, 0, CBS(6), 0}, // 6
         // PWM ADC trigger: wait for PWM, set sample length, trigger SPI
             {PWM_TI,    MEM(mp, &dp->pwm_val),     REG(pwm_regs, PWM_FIF1), 4, 0, CBS(8), 0}, // 7
             {PWM_TI,    MEM(mp, &dp->samp_size),   REG(spi_regs, SPI_DLEN), 4, 0, CBS(9), 0}, // 8

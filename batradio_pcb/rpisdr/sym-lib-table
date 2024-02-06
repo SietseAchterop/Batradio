@@ -1,3 +1,4 @@
 (sym_lib_table
-  (lib (name mylib)(type Legacy)(uri ${KICAD_MYLIBS_DIR}/mylib.lib)(options "")(descr ""))
+  (lib (name "mylib")(type "Legacy")(uri "${KICAD_MYLIBS_DIR}/mylib.lib")(options "")(descr ""))
+  (lib (name "rpisdr-rescue")(type "Legacy")(uri "${KIPRJMOD}/rpisdr-rescue.lib")(options "")(descr ""))
 )
