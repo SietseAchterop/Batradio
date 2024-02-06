@@ -21,6 +21,7 @@ Currently I have not been able to get the FIQ interrupt working.
 
 A variant of https://iosoft.blog/2020/11/16/streaming-analog-data-raspberry-pi/
 
+Basically works, but the generated SCLK is wrong and the data is partly wrong.
 
 ### Status:
 
