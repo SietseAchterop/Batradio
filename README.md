@@ -31,5 +31,7 @@ The main changes for the 16 bit mcp33131 are:
   - added -U option to send data over UDP channel.
   - DAC not used yet.
   
-Basically works, but the generated SCLK is wrong and the data is partly wrong.
+Basically works, but the data is partly wrong.
+Also the SPI clock should be lower than 5 MHz?
+
 
