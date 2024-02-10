@@ -1351,7 +1351,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 76cf6c13-a3c5-4cde-9bb2-bef31f761595)
   )
-  (text "3 volt voor microfoon" (at 78.74 162.56 0)
+  (text "3 volt voor microfoon" (at 55.88 69.85 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 78d4e66b-a55d-4720-b85b-9f6728efcd3b)
   )

@@ -28,9 +28,6 @@
 
 #include "rpi_dma_utils.h"
 
-// If non-zero, enable PWM hardware output  (used to drive CNVCS)
-#define PWM_OUT         1
-
 char *dma_regstrs[] = {"DMA CS", "CB_AD", "TI", "SRCE_AD", "DEST_AD",
     "TFR_LEN", "STRIDE", "NEXT_CB", "DEBUG", ""};
 
@@ -303,21 +300,20 @@ void init_pwm(int freq, int range, int val)
     while ((*REG32(clk_regs, CLK_PWM_CTL) & (1 << 7)) == 0) ;
 #endif
     usleep(100);
-    *REG32(pwm_regs, PWM_RNG1) = range;    
+    *REG32(pwm_regs, PWM_RNG2) = range;    
     *REG32(pwm_regs, PWM_FIF1) = val;
     //    *REG32(pwm_regs, PWM_DAT2) = val;
     usleep(100);
 #if PWM_OUT
-    //    gpio_mode(PWM_PIN, GPIO_ALT0); // GPIO13  pwm1
-    gpio_mode(12, GPIO_ALT0); // GPIO10  pwm0
+    gpio_mode(PWM_PIN, GPIO_ALT0); // pwm
 #endif
 }
 
 // Start PWM (M/S mode) operation for use with MCP33131
 void start_pwm(void)
 {
-  //  *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF1 | PWM_ENAB2 | PWM_CTL_MSEN2 | PWM_CTL_POLA2;  // pwm1
-  *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF1 | PWM_ENAB1 | PWM_CTL_MSEN1 | PWM_CTL_POLA1;  // pwm0
+      *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF2 | PWM_ENAB2 | PWM_CTL_MSEN2 | PWM_CTL_POLA2;  // pwm1
+  //  *REG32(pwm_regs, PWM_CTL) = PWM_CTL_USEF1 | PWM_ENAB1 | PWM_CTL_MSEN1 | PWM_CTL_POLA1;  // pwm0
 }
 
 // Stop PWM operation

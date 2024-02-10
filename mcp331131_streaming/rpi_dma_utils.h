@@ -1,7 +1,7 @@
 // Raspberry Pi DMA utility definitions; see https://iosoft.blog for details
 //
 //    Version for MCP33131 as ADC
-//    And using PWM1 via GPIO13 (nu toch PWM0??)  maar waarom moest dat ook al weer??
+//    And using PWM1 via GPIO13
 //
 // Copyright (c) 2020 Jeremy P Bentham
 //
@@ -102,6 +102,8 @@ typedef struct {
 #define GPIO_PULLDN     1
 #define GPIO_PULLUP     2
 
+#define BUS_GPIO_REG(a) (GPIO_BASE-PHYS_REG_BASE+BUS_REG_BASE+(uint32_t)(a))
+
 // Videocore mailbox memory allocation flags, see:
 //     https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface
 typedef enum {
@@ -174,7 +176,7 @@ typedef struct {
 #define PWM_DMAC        0x08   // DMA control
 #define PWM_RNG1        0x10   // Channel 1 range
 #define PWM_DAT1        0x14   // Channel 1 data
-#define PWM_FIF1        0x18   // Channel 1 fifo
+#define PWM_FIF1        0x18   // Fifo
 #define PWM_RNG2        0x20   // Channel 2 range
 #define PWM_DAT2        0x24   // Channel 2 data
 // PWM register values
@@ -192,8 +194,11 @@ typedef struct {
 #define PWM_ENAB2       (1<<8)  // Enable PWM channel 2
 
 #define PWM_DMAC_ENAB   (1<<31) // Start PWM DMA
+#define PWM_DMAC_TH      1      // DMA threshold
 
-#define PWM_PIN         13      // GPIO pin for PWM output   (MOET TOCH 12 worden!!!?)
+// If non-zero, enable PWM hardware output  (to drive CNVCS)
+#define PWM_OUT         1
+#define PWM_PIN         13      // GPIO pin for PWM output
 
 // Clock registers and values
 #define CLK_BASE        (PHYS_REG_BASE + 0x101000)

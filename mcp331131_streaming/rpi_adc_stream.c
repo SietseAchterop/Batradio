@@ -10,6 +10,7 @@ sudo ./rpi_adc_stream -n 1000 -r 300000 -s /tmp/adc.fifo
   Dus net voldoende, 150 kHz, vleermuizen gaan tot 120 kHz.
 
 Alternatively via UDP with -U <ip_number>
+  sudo ./rpi_adc_stream -n 1000 -r 300000 -u 192.168.178.59
 
  */
 
@@ -93,7 +94,8 @@ Alternatively via UDP with -U <ip_number>
 // SPI clock frequency
 #define MIN_SPI_FREQ    10000
 #define MAX_SPI_FREQ    20000000
-#define SPI_FREQ        10000000
+//#define SPI_FREQ        10000000
+#define SPI_FREQ        1000000
 
 // SPI 0 pin definitions
 #define SPI0_CE0_PIN    8
@@ -191,6 +193,7 @@ void spi_xfer(uint8_t *txd, uint8_t *rxd, int len);
 void spi_disable(void);
 void disp_spi(void);
 
+
 // Main program
 int main(int argc, char *argv[])
 {
@@ -266,6 +269,8 @@ int main(int argc, char *argv[])
     signal(SIGINT, terminate);
     pwm_range = (PWM_FREQ * 2) / sample_rate;
     f = init_spi(SPI_FREQ);
+
+    gpio_mode(LED_PIN, GPIO_OUT);
 
     if (testmode)
     {
@@ -373,7 +378,7 @@ void map_devices(void)
 }
 
 // Fetch single sample from ADC channel 0 or 1
-#define BIG 100000
+#define BIG 10000
 int adc_get_sample(int chan)
 {
     uint8_t txdata[ADC_RAW_LEN] = {0, 0}; // dummy value
@@ -383,9 +388,9 @@ int adc_get_sample(int chan)
 
     FILE *f = fopen("adc.data", "wb");
     printf("Dumping to adc.data\n");
-    // gpio12
-    gpio_set(12, GPIO_OUT, GPIO_NOPULL);
-    gpio_out(12, 0);
+
+    gpio_set(PWM_PIN, GPIO_OUT, GPIO_NOPULL);
+    gpio_out(PWM_PIN, 0);
     uint32_t csval = *REG32(spi_regs, SPI_CS);
     while (1) {
       for (int x=0; x<BIG; x++) {
@@ -403,7 +408,7 @@ int adc_get_sample(int chan)
 	// kan dit niet slimmer?
 	int16_t data =   ((rxdata[0]) << 8) | rxdata[1];
 	filebuf[x] = data;
-	usleep(1);
+	usleep(3);
 	// staat het nog active?
       }
       // copy to file
@@ -485,7 +490,7 @@ float test_pwm_frequency(MEM_MAP *mp)
     };
     memcpy(dp, &dma_data, sizeof(dma_data));                // Copy DMA data into uncached memory
     init_pwm(PWM_FREQ, pwm_range, PWM_VALUE);               // Initialise PWM
-    *REG32(pwm_regs, PWM_DMAC) = PWM_DMAC_ENAB | 1;         // Enable PWM DMA
+    *REG32(pwm_regs, PWM_DMAC) = PWM_DMAC_ENAB | PWM_DMAC_TH; // Enable PWM DMA
     start_dma(mp, DMA_CHAN_A, &dp->cbs[0], 0);              // Start DMA
     start_pwm();                                            // Start PWM
     dma_wait(DMA_CHAN_A);                                   // Wait until complete
@@ -509,7 +514,8 @@ void adc_dma_init(MEM_MAP *mp, int nsamp, int single)
       // -2 creates the CNVCS pulse, 240 nsec
         .pindata = 1<<LED_PIN,
         .samp_size = 2, .pwm_val = pwm_range-PWM_VALUE, .txd={0xd0, in_chans>1 ? 0xf0 : 0xd0},
-        .adc_csd = SPI_TFR_ACT | SPI_DMA_EN | SPI_FIFO_CLR | ADC_CE_NUM,
+        .adc_csd = SPI_TFR_ACT | SPI_DMA_EN | ADC_CE_NUM,
+	//	.adc_csd = SPI_TFR_ACT | SPI_DMA_EN | SPI_FIFO_CLR | ADC_CE_NUM,
         .usecs = {0, 0}, .states = {0, 0}, .rxd1 = {0}, .rxd2 = {0},
         .cbs = {
         // Rx input: read data from usec clock and SPI, into 2 ping-pong buffers
@@ -519,21 +525,23 @@ void adc_dma_init(MEM_MAP *mp, int nsamp, int single)
             {SPI_RX_TI, REG(usec_regs, USEC_TIME), MEM(mp, &dp->usecs[1]),  4, 0, CBS(4), 0}, // 3
             {SPI_RX_TI, REG(spi_regs, SPI_FIFO),   MEM(mp, dp->rxd2), nsamp*4, 0, CBS(5), 0}, // 4
             {SPI_RX_TI, REG(spi_regs, SPI_CS),     MEM(mp, &dp->states[1]), 4, 0, CBS(0), 0}, // 5
-        // Tx output: dummy data to generate sclk
-            {SPI_TX_TI, MEM(mp, dp->txd),          REG(spi_regs, SPI_FIFO), 4, 0, CBS(6), 0}, // 6
+        // Tx output: 2 data writes to SPI for chan 0 & 1, or both chan 0
+            {SPI_TX_TI, MEM(mp, dp->txd),          REG(spi_regs, SPI_FIFO), 4, 0, CBS(6), 0}, // 6  dummy data to get a clock
         // PWM ADC trigger: wait for PWM, set sample length, trigger SPI
             {PWM_TI,    MEM(mp, &dp->pwm_val),     REG(pwm_regs, PWM_FIF1), 4, 0, CBS(8), 0}, // 7
             {PWM_TI,    MEM(mp, &dp->samp_size),   REG(spi_regs, SPI_DLEN), 4, 0, CBS(9), 0}, // 8
             {PWM_TI,    MEM(mp, &dp->adc_csd),     REG(spi_regs, SPI_CS),   4, 0, CBS(7), 0}, // 9
-	    //            {PWM_TI,    MEM(mp, &dp->pindata),          GPIO(GPIO_CLR0), 4, 0, CBS(8), 0},        // 7
-	    //            {PWM_TI,    MEM(mp, &dp->pindata),         GPIO(GPIO_SET0), 4, 0, CBS(11), 0},  // 11
+	    /*
+	    {PWM_TI,    MEM(mp, &dp->pindata),     GPIO(GPIO_CLR0),         4, 0, CBS(8), 0}, // 7
+	    {PWM_TI,    MEM(mp, &dp->pindata),     GPIO(GPIO_SET0),         4, 0, CBS(11), 0}, // 11
+	    */
         }
     };
     if (single)                                 // If single-shot, stop after first Rx block
         dma_data.cbs[2].next_cb = 0;
     memcpy(dp, &dma_data, sizeof(dma_data));    // Copy DMA data into uncached memory
     init_pwm(PWM_FREQ, pwm_range, PWM_VALUE);   // Initialise PWM, with DMA
-    *REG32(pwm_regs, PWM_DMAC) = PWM_DMAC_ENAB | PWM_ENAB1;
+    *REG32(pwm_regs, PWM_DMAC) = PWM_DMAC_ENAB | PWM_DMAC_TH;
     *REG32(spi_regs, SPI_DC) = (8<<24) | (1<<16) | (8<<8) | 1;  // Set DMA priorities
     *REG32(spi_regs, SPI_CS) = SPI_FIFO_CLR;                    // Clear SPI FIFOs
     start_dma(mp, DMA_CHAN_C, &dp->cbs[6], 0);  // Start SPI Tx DMA
@@ -716,7 +724,7 @@ int adc_stream_packet(MEM_MAP *mp, char *vals, int maxlen, int nsamp, int num)
 {
     ADC_DMA_DATA *dp=mp->virt;
     uint32_t i, n, usec, slen=0;
-    uint16_t v, sum;
+    uint16_t v, sum; //, s1, s2;
 
     // data available?
     int da = 0;
@@ -756,12 +764,18 @@ int adc_stream_packet(MEM_MAP *mp, char *vals, int maxlen, int nsamp, int num)
 	    sum = -1 + 2*(nsamp+5) + nm;
 
 	    // data
+	    //	    printf("Next:\n");
 	    for (int x=0; x<nsamp; x++) {
 	      i = 2*x;
-
+	      /*
+	      s1 = (uint16_t)rx_buff[x] & 0x0000ffff;
+	      s2 = (uint16_t)rx_buff[x] >> 16;
+	      printf("%d, %d ", s2, s1);
+	      if (x%5 == 0) printf("\n");
+	      */
 	      v = ADC_RAW_VAL(rx_buff[x]);
-	      if (((int16_t)v>1000) || ((int16_t)v<-1000))
-		printf("n= %d, x= %d, v= %d\n", nm, x, (int16_t)v);		       
+	      //	      if (((int16_t)v>1000) || ((int16_t)v<-1000))
+	      //		printf("n= %d, x= %d, v= %d\n", nm, x, (int16_t)v);		       
 	      // remove dc offset?  PAS OP, gaat fout bij overflow! Do at other side.
 	      vals[i+8]   = v % 256;
 	      vals[i+8+1] = v / 256;
@@ -897,9 +911,9 @@ void spi_clear(void)
 // Create CNVCS pulse  (no pwm yet)
 void spi_cnvcs(void)
 {
-  gpio_out(12, 1);
-  usleep(0);
-  gpio_out(12, 0);
+  gpio_out(PWM_PIN, 1);
+  usleep(1);
+  gpio_out(PWM_PIN, 0);
 }
 
 // Transfer SPI bytes
