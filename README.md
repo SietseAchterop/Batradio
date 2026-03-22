@@ -11,8 +11,8 @@ contains a KiCad project for a hat for the rpi (zero).
 It contains a 1Mbit 16 bit spi adc, mcp33131 and a 14 bit dac, mcp4821.
 Also a preamplifier and lowpass filter.
 
-Status: This is the design of the prototype.
-There still is one error in the PCB design. Pins 1 and 8 of the U4, a ths4521, should be swapped and a 100nF capacitor to ground should be connected to pin 2.
+Status: The prototype had the following error in the PCB design. Pins 1 and 8 of the U4, a ths4521, should be swapped and a 100nF capacitor to ground should be connected to pin 2.
+This, untested, version corrects that.
 
 ## Kernel module, a failed attempt.
 
@@ -33,5 +33,8 @@ The main changes for the 16 bit mcp33131 are:
   
 Basically works, but the data is partly wrong.
 Also the SPI clock should be lower than 5 MHz?
+
+## kicadlibs
+My local symbols and footprints for KiCad
 
 
