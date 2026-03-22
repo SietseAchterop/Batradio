@@ -14,6 +14,10 @@ Also a preamplifier and lowpass filter.
 Status: The prototype had the following error in the PCB design. Pins 1 and 8 of the U4, a ths4521, should be swapped and a 100nF capacitor to ground should be connected to pin 2.
 This, untested, version corrects that.
 
+<img src="batradio_pcb/schematic.pdf" alt="Schematic" width="800"/>
+
+<img src="batradio_pcb/rpisdr/rpisdr3D.png" alt="PCBview" width="800"/>
+
 ## Kernel module, a failed attempt.
 
 Kernel module to process the data from adc and dac.
