@@ -537,7 +537,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:ldln025"
+		(symbol "mylib:ldln025"
 			(pin_names
 				(offset 1.016)
 			)
@@ -694,7 +694,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:mcp33131"
+		(symbol "mylib:mcp33131"
 			(pin_names
 				(offset 1.016)
 			)
@@ -942,7 +942,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:ths4521"
+		(symbol "mylib:ths4521"
 			(pin_names
 				(offset 1.016)
 			)
@@ -3939,7 +3939,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:ths4521")
+		(lib_id "mylib:ths4521")
 		(at 88.9 80.01 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -4026,7 +4026,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:ldln025")
+		(lib_id "mylib:ldln025")
 		(at 209.55 40.64 0)
 		(mirror y)
 		(unit 1)
@@ -4168,7 +4168,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:mcp33131")
+		(lib_id "mylib:mcp33131")
 		(at 173.99 80.01 0)
 		(unit 1)
 		(exclude_from_sim no)

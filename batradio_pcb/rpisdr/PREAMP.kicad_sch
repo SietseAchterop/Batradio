@@ -701,7 +701,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:lmh6629"
+		(symbol "mylib:lmh6629"
 			(pin_names
 				(offset 1.016)
 			)
@@ -4795,7 +4795,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:lmh6629")
+		(lib_id "mylib:lmh6629")
 		(at 90.17 50.8 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -4938,7 +4938,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:lmh6629")
+		(lib_id "mylib:lmh6629")
 		(at 227.33 52.07 0)
 		(unit 1)
 		(exclude_from_sim no)

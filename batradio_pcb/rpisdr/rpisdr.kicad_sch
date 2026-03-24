@@ -1209,7 +1209,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:Mounting_Hole-Mechanical"
+		(symbol "mylib:Mounting_Hole-Mechanical"
 			(pin_names
 				(offset 1.016)
 			)
@@ -1283,7 +1283,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:RPI_header"
+		(symbol "mylib:RPI_header"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -2527,7 +2527,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "mylibxx:ldln025"
+		(symbol "mylib:ldln025"
 			(pin_names
 				(offset 1.016)
 			)
@@ -6089,7 +6089,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:ldln025")
+		(lib_id "mylib:ldln025")
 		(at 68.58 52.07 0)
 		(mirror y)
 		(unit 1)
@@ -6166,7 +6166,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:Mounting_Hole-Mechanical")
+		(lib_id "mylib:Mounting_Hole-Mechanical")
 		(at 68.58 182.88 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -6230,7 +6230,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:ldln025")
+		(lib_id "mylib:ldln025")
 		(at 226.06 140.97 0)
 		(mirror y)
 		(unit 1)
@@ -6307,7 +6307,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:RPI_header")
+		(lib_id "mylib:RPI_header")
 		(at 232.41 76.2 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -6489,7 +6489,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:Mounting_Hole-Mechanical")
+		(lib_id "mylib:Mounting_Hole-Mechanical")
 		(at 83.82 182.88 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -6553,7 +6553,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:Mounting_Hole-Mechanical")
+		(lib_id "mylib:Mounting_Hole-Mechanical")
 		(at 68.58 190.5 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -6683,7 +6683,7 @@
 		)
 	)
 	(symbol
-		(lib_id "mylibxx:Mounting_Hole-Mechanical")
+		(lib_id "mylib:Mounting_Hole-Mechanical")
 		(at 83.82 190.5 0)
 		(unit 1)
 		(exclude_from_sim no)

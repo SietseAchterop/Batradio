@@ -753,8 +753,7 @@
       (uri /usr/share/kicad/library/Device.lib))
     (library (logical Mechanical)
       (uri /usr/share/kicad/library/Mechanical.lib))
-    (library (logical mylib)
-      (uri /home/sietse/Radio/kicadlibs/mylib.lib)))
+)
   (nets
     (net (code 1) (name GND)
       (node (ref C24) (pin 1))

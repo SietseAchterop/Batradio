@@ -894,9 +894,6 @@
     <library logical="Mechanical">
       <uri>/usr/share/kicad/library/Mechanical.lib</uri>
     </library>
-    <library logical="mylib">
-      <uri>/home/sietse/Radio/kicadlibs/mylib.lib</uri>
-    </library>
   </libraries>
   <nets>
     <net code="1" name="GND">
