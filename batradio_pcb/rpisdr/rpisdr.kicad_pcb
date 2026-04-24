@@ -16306,38 +16306,6 @@
 		)
 	)
 	(gr_line
-		(start 265 147)
-		(end 265 97)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "Edge.Cuts")
-		(uuid "08b8a50c-4e4d-4d8c-a9d3-44bd0aad4b69")
-	)
-	(gr_arc
-		(start 265 147)
-		(mid 264.12132 149.12132)
-		(end 262 150)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "Edge.Cuts")
-		(uuid "66ec4953-de44-4e2d-aede-863a7daa779f")
-	)
-	(gr_arc
-		(start 262 94)
-		(mid 264.12132 94.87868)
-		(end 265 97)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "Edge.Cuts")
-		(uuid "8db474f0-6487-4b85-9d3f-8c7bb2894120")
-	)
-	(gr_line
 		(start 200 97)
 		(end 200 113)
 		(stroke
@@ -16359,6 +16327,16 @@
 		(uuid "c890bb8c-6187-41f0-b3f0-f146efe8a65b")
 	)
 	(gr_line
+		(start 200 113.0049)
+		(end 200 131.0008)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "f20c75ec-5740-41d5-9c88-bdb0ba325b54")
+	)
+	(gr_line
 		(start 200 131)
 		(end 200 147)
 		(stroke
@@ -16367,16 +16345,6 @@
 		)
 		(layer "Edge.Cuts")
 		(uuid "cb03dc60-e6ba-4e56-b2fa-2d33bba44758")
-	)
-	(gr_line
-		(start 203 150)
-		(end 262 150)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "Edge.Cuts")
-		(uuid "d3c39227-7ab6-45a4-be88-88156762c610")
 	)
 	(gr_arc
 		(start 203 150)
@@ -16390,14 +16358,14 @@
 		(uuid "db76b755-2d8a-420d-aa8b-d974fc91afcd")
 	)
 	(gr_line
-		(start 200 113.0049)
-		(end 200 131.0008)
+		(start 203 150)
+		(end 262 150)
 		(stroke
 			(width 0.1)
 			(type solid)
 		)
 		(layer "Edge.Cuts")
-		(uuid "f20c75ec-5740-41d5-9c88-bdb0ba325b54")
+		(uuid "d3c39227-7ab6-45a4-be88-88156762c610")
 	)
 	(gr_line
 		(start 262 94)
@@ -16408,6 +16376,38 @@
 		)
 		(layer "Edge.Cuts")
 		(uuid "f4ab5950-0c8e-4a7f-9615-bca777077fab")
+	)
+	(gr_arc
+		(start 262 94)
+		(mid 264.12132 94.87868)
+		(end 265 97)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "8db474f0-6487-4b85-9d3f-8c7bb2894120")
+	)
+	(gr_arc
+		(start 265 147)
+		(mid 264.12132 149.12132)
+		(end 262 150)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "66ec4953-de44-4e2d-aede-863a7daa779f")
+	)
+	(gr_line
+		(start 265 147)
+		(end 265 97)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "08b8a50c-4e4d-4d8c-a9d3-44bd0aad4b69")
 	)
 	(gr_text "RASPBERRY-PI 40-PIN ADDON BOARD\nVIEW FROM TOP\nNOTE: P1 SHOULD BE FITTED ON THE REVERSE OF THE BOARD\n\nADD EDGE CUTS FROM CAMERA AND DISPLAY PORTS AS REQUIRED"
 		(at 200 160.16 0)
